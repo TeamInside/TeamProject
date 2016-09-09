@@ -22,7 +22,7 @@ namespace TeamProject.Controllers
         public ActionResult Index()
         {
 
-            var posts = this.db.Posts.OrderBy(p => p.PostedOn)
+            var posts = this.db.Posts.OrderByDescending(p => p.PostedOn)
                 .Select(PostViewModel.ViewModel);
 
             return this.View(new PostsViewModel()
@@ -45,6 +45,7 @@ namespace TeamProject.Controllers
             this.ViewBag.CanEdit = isOwner || isAdmin;
             return this.PartialView("_PostDetailsView", postDetails);
         }
+        
 
         public ActionResult SelectPostOption()
         {
@@ -161,7 +162,7 @@ namespace TeamProject.Controllers
                         {
                             post.PostLikeCounter -= 2;
                             postLike.Like = false;
-                            Success("Disliked.");
+                            Success("Disliked.",true);
                         }
                         else if (!isLike && command.Equals("Like"))
                         {
@@ -185,13 +186,13 @@ namespace TeamProject.Controllers
                         {
                             post.PostLikeCounter += 1;
                             newPostLike.Like = true;
-                            Information("You like this.");
+                            Information("You like this.",true);
                         }
                         else if (command.Equals("Dislike"))
                         {
                             post.PostLikeCounter -= 1;
                             newPostLike.Like = false;
-                            Information("You didn't like this.");
+                            Information("You didn't like this.",true);
                         }
                         db.PostLikes.Add(newPostLike);
                         db.SaveChanges();
@@ -218,17 +219,6 @@ namespace TeamProject.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Notification(TempDataDictionary alert)
-        {
-            var alerts = TempData.ContainsKey(Alert.TempDataKey)
-
-            ? (List<Alert>)TempData[Alert.TempDataKey]
-
-            : new List<Alert>();
-
-
-            return PartialView("_Alert", alert);
-        }
        //
        //POST Comment Like
        [HttpPost]
